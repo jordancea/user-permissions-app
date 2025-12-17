@@ -30,17 +30,17 @@ export const RolePermissionSection: React.FC = () => {
     [roles, selectedRoleId]
   );
 
-
   const canEdit = can("roles:update");
-  const canView = canEdit || can("content:edit"); 
+  const canView = canEdit || can("content:edit");
+
+  const isDirty = useMemo(() => {
+    if (!selectedRole) return false;
+    const original = selectedRole.Permissions.map((p) => p.id).sort();
+    const current = [...selectedPermissions].sort();
+    return JSON.stringify(original) !== JSON.stringify(current);
+  }, [selectedRole, selectedPermissions]);
 
   if (!canView) return null;
-
-  
-  if (isLoadingRoles || isLoadingPermissions) {
-    return <Typography>Loading...</Typography>;
-  }
-
 
   const handleSelectRole = (role: any) => {
     setSelectedRoleId(role.id);
@@ -58,19 +58,11 @@ export const RolePermissionSection: React.FC = () => {
 
   const handleSave = () => {
     if (!selectedRole || !canEdit) return;
-
     mutate({
       roleId: selectedRole.id,
       payload: selectedPermissions,
     });
   };
-
-  const isDirty = useMemo(() => {
-    if (!selectedRole) return false;
-    const original = selectedRole.Permissions.map((p) => p.id).sort();
-    const current = [...selectedPermissions].sort();
-    return JSON.stringify(original) !== JSON.stringify(current);
-  }, [selectedRole, selectedPermissions]);
 
   return (
     <Stack direction="row" spacing={3}>
@@ -78,45 +70,52 @@ export const RolePermissionSection: React.FC = () => {
         <Typography variant="h6" p={2}>
           Roles
         </Typography>
-
-        <List disablePadding>
-          {roles.map((role) => (
-            <ListItemButton
-              key={role.id}
-              selected={role.id === selectedRoleId}
-              onClick={() => handleSelectRole(role)}
-              disabled={isPending}
-            >
-              <ListItemText primary={role.name} />
-            </ListItemButton>
-          ))}
-        </List>
+        {isLoadingRoles ? (
+          <Typography p={2}>Loading roles...</Typography>
+        ) : (
+          <List disablePadding>
+            {roles.map((role) => (
+              <ListItemButton
+                key={role.id}
+                selected={role.id === selectedRoleId}
+                onClick={() => handleSelectRole(role)}
+                disabled={isPending}
+              >
+                <ListItemText primary={role.name} />
+              </ListItemButton>
+            ))}
+          </List>
+        )}
       </Paper>
       {selectedRole && (
         <Paper sx={{ flex: 1, opacity: canEdit ? 1 : 0.6 }}>
           <Typography variant="h6" p={2}>
             Permissions
           </Typography>
+          {isLoadingPermissions ? (
+            <Typography p={2}>Loading permissions...</Typography>
+          ) : (
+            <List disablePadding>
+              {allPermissions.map((permission) => (
+                <ListItemButton
+                  key={permission.id}
+                  dense
+                  onClick={() => handleTogglePermission(permission.id)}
+                  disabled={isPending || !canEdit}
+                >
+                  <Checkbox
+                    edge="start"
+                    checked={selectedPermissions.includes(permission.id)}
+                    tabIndex={-1}
+                    disableRipple
+                  />
+                  <ListItemText primary={permission.key} />
+                </ListItemButton>
+              ))}
+            </List>
+          )}
 
-          <List disablePadding>
-            {allPermissions.map((permission) => (
-              <ListItemButton
-                key={permission.id}
-                dense
-                onClick={() => handleTogglePermission(permission.id)}
-                disabled={isPending || !canEdit}
-              >
-                <Checkbox
-                  edge="start"
-                  checked={selectedPermissions.includes(permission.id)}
-                  tabIndex={-1}
-                  disableRipple
-                />
-                <ListItemText primary={permission.key} />
-              </ListItemButton>
-            ))}
-          </List>
-          {canEdit && (
+          {canEdit && !isLoadingPermissions && (
             <Box p={2} display="flex" justifyContent="flex-end">
               <Button
                 variant="contained"
