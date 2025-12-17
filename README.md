@@ -27,7 +27,7 @@ A full-stack application for managing users, roles, and permissions.
 
 - User management (create, edit, delete users)  
 - Role and permission management  
-- Authentication with JWT and sessions  
+- Authentication with JWT
 - API documentation via Swagger at `/api-docs`  
 - Database seeding on startup with test users and roles  
 
