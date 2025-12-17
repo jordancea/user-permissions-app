@@ -1,4 +1,5 @@
 export interface RolePermission {
+    id: number;
     key: string;
 }
 
@@ -8,7 +9,3 @@ export interface Role {
     Permissions: RolePermission[];
 }
 
-
-export interface UpdateRolePermissionsPayload {
-    Permissions: string[];
-}

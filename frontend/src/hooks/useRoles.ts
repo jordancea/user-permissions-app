@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchRoles, updateRolePermissions } from "../services/roles";
-import type { Role, UpdateRolePermissionsPayload } from "../types/roles.types";
+import type { Role,  } from "../types/roles.types";
 import { emptyRolesList } from "../utils/emptyObjects/emptyRoles";
 import { useAlertStore } from "../components/shared/Alert/useAlertStore";
 
@@ -36,7 +36,7 @@ export const useUpdateRolePermissions = () => {
             payload,
         }: {
             roleId: number;
-            payload: UpdateRolePermissionsPayload;
+            payload: number[];
         }) => updateRolePermissions(roleId, payload),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["roles"] });
