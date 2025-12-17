@@ -1,0 +1,161 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+      "title": "User Roles Permissions API",
+      "version": "1.0.0",
+      "description": "Centralized Swagger documentation for backend API"
+    },
+    "servers": [
+      {
+        "url": "http://localhost:4000",
+        "description": "Development server"
+      }
+    ],
+    "components": {
+      "schemas": {
+        "User": {
+          "type": "object",
+          "properties": {
+            "id": { "type": "integer" },
+            "name": { "type": "string" },
+            "email": { "type": "string" },
+            "roleId": { "type": "integer" },
+            "Role": {
+              "type": "object",
+              "properties": {
+                "name": { "type": "string" },
+                "Permissions": {
+                  "type": "array",
+                  "items": { "type": "object", "properties": { "key": { "type": "string" } } }
+                }
+              }
+            }
+          }
+        },
+        "Role": {
+          "type": "object",
+          "properties": {
+            "id": { "type": "integer" },
+            "name": { "type": "string" },
+            "Permissions": {
+              "type": "array",
+              "items": { "type": "object", "properties": { "key": { "type": "string" } } }
+            }
+          }
+        },
+        "LoginRequest": {
+          "type": "object",
+          "properties": {
+            "email": { "type": "string" },
+            "password": { "type": "string" }
+          }
+        }
+      },
+      "securitySchemes": {
+        "cookieAuth": { "type": "apiKey", "in": "cookie", "name": "connect.sid" }
+      }
+    },
+    "paths": {
+      "/api/users": {
+        "get": {
+          "summary": "List all users",
+          "tags": ["Users"],
+          "security": [{"cookieAuth": []}],
+          "responses": {
+            "200": { "description": "List of users", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/User" } } } } }
+          }
+        },
+        "post": {
+          "summary": "Create a new user",
+          "tags": ["Users"],
+          "security": [{"cookieAuth": []}],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/User" } }
+            }
+          },
+          "responses": { "201": { "description": "User created" } }
+        }
+      },
+      "/api/users/{id}": {
+        "put": {
+          "summary": "Update a user by ID",
+          "tags": ["Users"],
+          "security": [{"cookieAuth": []}],
+          "parameters": [
+            { "in": "path", "name": "id", "required": true, "schema": { "type": "integer" } }
+          ],
+          "requestBody": {
+            "required": true,
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/User" } } }
+          },
+          "responses": { "200": { "description": "User updated" } }
+        },
+        "delete": {
+          "summary": "Delete a user by ID",
+          "tags": ["Users"],
+          "security": [{"cookieAuth": []}],
+          "parameters": [
+            { "in": "path", "name": "id", "required": true, "schema": { "type": "integer" } }
+          ],
+          "responses": { "200": { "description": "User deleted" } }
+        }
+      },
+      "/api/roles": {
+        "get": {
+          "summary": "List all roles",
+          "tags": ["Roles"],
+          "security": [{"cookieAuth": []}],
+          "responses": { "200": { "description": "List of roles", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Role" } } } } } }
+        }
+      },
+      "/api/roles/{id}": {
+        "put": {
+          "summary": "Update permissions for a role",
+          "tags": ["Roles"],
+          "security": [{"cookieAuth": []}],
+          "parameters": [
+            { "in": "path", "name": "id", "required": true, "schema": { "type": "integer" } }
+          ],
+          "requestBody": {
+            "required": true,
+            "content": { "application/json": { "schema": { "type": "object", "properties": { "Permissions": { "type": "array", "items": { "type": "string" } } } } } }
+          },
+          "responses": { "200": { "description": "Role permissions updated" } }
+        }
+      },
+      "/api/auth/select": {
+        "post": {
+          "summary": "Select a user",
+          "tags": ["Auth"],
+          "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/LoginRequest" } } } },
+          "responses": { "200": { "description": "User selected" } }
+        }
+      },
+      "/api/auth/login": {
+        "post": {
+          "summary": "Login a user",
+          "tags": ["Auth"],
+          "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/LoginRequest" } } } },
+          "responses": { "200": { "description": "Logged in" } }
+        }
+      },
+      "/api/auth/logout": {
+        "post": {
+          "summary": "Logout a user",
+          "tags": ["Auth"],
+          "responses": { "200": { "description": "Logged out" } }
+        }
+      },
+      "/api/auth/me": {
+        "get": {
+          "summary": "Get current user info",
+          "tags": ["Auth"],
+          "security": [{"cookieAuth": []}],
+          "responses": { "200": { "description": "Current user data" } }
+        }
+      }
+    }
+  }
+  
