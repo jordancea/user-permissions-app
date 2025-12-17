@@ -74,3 +74,5 @@ THE passwords for all the users is: password
 
 http://localhost:4000 -- backend
 http://localhost:3000 -- frontend
+
+http://localhost:4000/api-docs/#/ 
